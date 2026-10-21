@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1060" height="916" font-family="-apple-system, 'Segoe UI', sans-serif">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="40" y="46" font-size="24" font-weight="700" fill="#1c2430"></text>
+<text x="40" y="72" font-size="13" fill="#68737f"></text>
+<text x="40" y="126" font-size="14" fill="#1c2430">Submitted · Critical</text>
+<rect x="230" y="113" width="640" height="20" rx="10" fill="#e3e8ee"/>
+<rect x="230" y="113" width="630" height="20" rx="10" fill="#2456b8"/>
+<text x="870" y="128" font-size="13" font-weight="700" fill="#1c2430">8</text>
+<text x="40" y="172" font-size="14" fill="#1c2430">In Progress · High</text>
+<rect x="230" y="159" width="640" height="20" rx="10" fill="#e3e8ee"/>
+<rect x="230" y="159" width="315" height="20" rx="10" fill="#b7791f"/>
+<text x="555" y="174" font-size="13" font-weight="700" fill="#1c2430">4</text>
+<text x="40" y="218" font-size="14" fill="#1c2430">Resolved · Critical</text>
+<rect x="230" y="205" width="640" height="20" rx="10" fill="#e3e8ee"/>
+<rect x="230" y="205" width="236.25" height="20" rx="10" fill="#0e7a5f"/>
+<text x="476.25" y="220" font-size="13" font-weight="700" fill="#1c2430">3</text>
+<text x="40" y="264" font-size="14" fill="#1c2430">Closed · Low</text>
+<rect x="230" y="251" width="640" height="20" rx="10" fill="#e3e8ee"/>
+<rect x="230" y="251" width="236.25" height="20" rx="10" fill="#0e7a5f"/>
+<text x="476.25" y="266" font-size="13" font-weight="700" fill="#1c2430">3</text>
+<text x="40" y="310" font-size="14" fill="#1c2430">Submitted · High</text>
+<rect x="230" y="297" width="640" height="20" rx="10" fill="#e3e8ee"/>
+<rect x="230" y="297" width="157.5" height="20" rx="10" fill="#2456b8"/>
+<text x="397.5" y="312" font-size="13" font-weight="700" fill="#1c2430">2</text>
+<text x="40" y="356" font-size="14" fill="#1c2430">Resolved · Low</text>
+<rect x="230" y="343" width="640" height="20" rx="10" fill="#e3e8ee"/>
+<rect x="230" y="343" width="157.5" height="20" rx="10" fill="#0e7a5f"/>
+<text x="397.5" y="358" font-size="13" font-weight="700" fill="#1c2430">2</text>
+<text x="40" y="402" font-size="14" fill="#1c2430">Submitted · Medium</text>
+<rect x="230" y="389" width="640" height="20" rx="10" fill="#e3e8ee"/>
+<rect x="230" y="389" width="157.5" height="20" rx="10" fill="#2456b8"/>
+<text x="397.5" y="404" font-size="13" font-weight="700" fill="#1c2430">2</text>
+<text x="40" y="448" font-size="14" fill="#1c2430">Closed · Critical</text>
+<rect x="230" y="435" width="640" height="20" rx="10" fill="#e3e8ee"/>
+<rect x="230" y="435" width="157.5" height="20" rx="10" fill="#0e7a5f"/>
+<text x="397.5" y="450" font-size="13" font-weight="700" fill="#1c2430">2</text>
+<text x="40" y="494" font-size="14" fill="#1c2430">Resolved · High</text>
+<rect x="230" y="481" width="640" height="20" rx="10" fill="#e3e8ee"/>
+<rect x="230" y="481" width="78.75" height="20" rx="10" fill="#0e7a5f"/>
+<text x="318.75" y="496" font-size="13" font-weight="700" fill="#1c2430">1</text>
+<text x="40" y="540" font-size="14" fill="#1c2430">Closed · Medium</text>
+<rect x="230" y="527" width="640" height="20" rx="10" fill="#e3e8ee"/>
+<rect x="230" y="527" width="78.75" height="20" rx="10" fill="#0e7a5f"/>
+<text x="318.75" y="542" font-size="13" font-weight="700" fill="#1c2430">1</text>
+<text x="40" y="586" font-size="14" fill="#1c2430">Rejected · High</text>
+<rect x="230" y="573" width="640" height="20" rx="10" fill="#e3e8ee"/>
+<rect x="230" y="573" width="78.75" height="20" rx="10" fill="#c23616"/>
+<text x="318.75" y="588" font-size="13" font-weight="700" fill="#1c2430">1</text>
+<text x="40" y="632" font-size="14" fill="#1c2430">Submitted · Low</text>
+<rect x="230" y="619" width="640" height="20" rx="10" fill="#e3e8ee"/>
+<rect x="230" y="619" width="78.75" height="20" rx="10" fill="#2456b8"/>
+<text x="318.75" y="634" font-size="13" font-weight="700" fill="#1c2430">1</text>
+<text x="40" y="678" font-size="14" fill="#1c2430">In Progress · Critical</text>
+<rect x="230" y="665" width="640" height="20" rx="10" fill="#e3e8ee"/>
+<rect x="230" y="665" width="78.75" height="20" rx="10" fill="#b7791f"/>
+<text x="318.75" y="680" font-size="13" font-weight="700" fill="#1c2430">1</text>
+<text x="40" y="724" font-size="14" fill="#1c2430">Closed · High</text>
+<rect x="230" y="711" width="640" height="20" rx="10" fill="#e3e8ee"/>
+<rect x="230" y="711" width="78.75" height="20" rx="10" fill="#0e7a5f"/>
+<text x="318.75" y="726" font-size="13" font-weight="700" fill="#1c2430">1</text>
+<text x="40" y="770" font-size="14" fill="#1c2430">Rejected · Medium</text>
+<rect x="230" y="757" width="640" height="20" rx="10" fill="#e3e8ee"/>
+<rect x="230" y="757" width="78.75" height="20" rx="10" fill="#c23616"/>
+<text x="318.75" y="772" font-size="13" font-weight="700" fill="#1c2430">1</text>
+<text x="40" y="816" font-size="14" fill="#1c2430">Rejected · Low</text>
+<rect x="230" y="803" width="640" height="20" rx="10" fill="#e3e8ee"/>
+<rect x="230" y="803" width="78.75" height="20" rx="10" fill="#c23616"/>
+<text x="318.75" y="818" font-size="13" font-weight="700" fill="#1c2430">1</text>
+<text x="40" y="898" font-size="11" fill="#68737f">Source: aggregation pipeline on ocms.complaints (seed data) — generated 2026-10-20</text>
+</svg>

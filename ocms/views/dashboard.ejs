@@ -1,0 +1,54 @@
+<%- include('partials/top', { title: 'My Dashboard' }) %>
+
+<h1>My dashboard</h1>
+
+<div class="kpi-row">
+  <div class="stat card"><b><%= filed %></b><span>complaints filed</span></div>
+  <% for (const s of byStatus) { %>
+    <div class="stat card"><b><%= s.count %></b><span><span class="badge"><%= s.status %></span></span></div>
+  <% } %>
+</div>
+
+<section class="card">
+  <h2>My complaints <a class="btn sm ghost" href="/complaints/new">＋ New</a></h2>
+  <% if (myComplaints.length) { %>
+    <table>
+      <tr><th>Ticket</th><th>Issue</th><th>Status</th><th>Priority</th><th>Filed</th><th>Due</th></tr>
+      <% for (const c of myComplaints) { %>
+        <tr>
+          <td class="mono"><a href="/complaints/<%= c._id %>"><%= c.ticketNo %></a></td>
+          <td><%= c.title %></td>
+          <td><span class="badge st-<%= c.status.replace(' ', '') %>"><%= c.status %></span></td>
+          <td><%= c.priority %></td>
+          <td><%= c.createdAt.toISOString().slice(0, 10) %></td>
+          <td><%= c.dueAt ? c.dueAt.toISOString().slice(0, 10) : '—' %></td>
+        </tr>
+      <% } %>
+    </table>
+  <% } else { %><p class="muted">No complaints yet — <a href="/complaints/new">file the first one</a>.</p><% } %>
+</section>
+
+<div class="two-col">
+  <section class="card">
+    <h2>Latest notifications <a class="muted sm-link" href="/notifications">all →</a></h2>
+    <% if (notifications.length) { %>
+      <ul class="plain-list">
+        <% for (const n of notifications) { %>
+          <li><%= n.read ? '' : '🔴' %> <b><%= n.title %></b><br><small><%= n.createdAt.toISOString().slice(0, 16).replace('T', ' ') %></small></li>
+        <% } %>
+      </ul>
+    <% } else { %><p class="muted">Nothing yet.</p><% } %>
+  </section>
+  <section class="card">
+    <h2>My ratings</h2>
+    <% if (feedback.length) { %>
+      <ul class="plain-list">
+        <% for (const f of feedback) { %>
+          <li><span class="stars"><%= '★'.repeat(f.rating) + '☆'.repeat(5 - f.rating) %></span> <%= f.comment || '' %><br><small><%= f.createdAt.toISOString().slice(0, 10) %></small></li>
+        <% } %>
+      </ul>
+    <% } else { %><p class="muted">No ratings given yet.</p><% } %>
+  </section>
+</div>
+
+<%- include('partials/foot') %>

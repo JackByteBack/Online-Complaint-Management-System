@@ -1,0 +1,154 @@
+<%- include('partials/top', { title: complaint.ticketNo }) %>
+
+<a class="muted sm-link" href="<%= user.role === 'officer' ? '/queue' : user.role === 'admin' ? '/search' : '/dashboard' %>">← back</a>
+
+<section class="card">
+  <div class="rep-head">
+    <div>
+      <div class="mono muted"><%= complaint.ticketNo %></div>
+      <h1 class="tight"><%= complaint.title %></h1>
+      <p><span class="badge st-<%= complaint.status.replace(' ', '') %>"><%= complaint.status %></span>
+         <span class="badge pr-<%= complaint.priority %>"><%= complaint.priority %></span>
+         <% for (const t of complaint.tags || []) { %><span class="tag">#<%= t %></span><% } %></p>
+      <p class="muted"><%= complaint.description %></p>
+    </div>
+    <div class="meta-box">
+      <div><span>Category</span><b><%= complaint.categoryCode %></b></div>
+      <div><span>Department</span><b><%= complaint.departmentId ? complaint.departmentId.name || '' : '—' %></b></div>
+      <div><span>Filed by</span><b><%= complaint.citizenId.name || complaint.citizenId %></b></div>
+      <div><span>Filed on</span><b><%= complaint.createdAt.toISOString().slice(0, 10) %></b></div>
+      <div><span>SLA due</span><b class="<%= (complaint.dueAt && !['Resolved','Closed','Rejected'].includes(complaint.status) && complaint.dueAt < new Date()) ? 'red' : '' %>"><%= complaint.dueAt ? complaint.dueAt.toISOString().slice(0, 10) : '—' %></b></div>
+      <div><span>Officer</span><b><%= complaint.assignedOfficerId ? (complaint.assignedOfficerId.name || '—') : 'Unassigned' %></b></div>
+    </div>
+  </div>
+  <% if (complaint.resolution && complaint.resolution.note) { %>
+    <div class="resolution">✅ <b>Resolution:</b> <%= complaint.resolution.note %></div>
+  <% } %>
+</section>
+
+<% if (isStaff) { %>
+<section class="card">
+  <h2>Staff actions</h2>
+  <form method="post" action="/complaints/<%= complaint._id %>/status" class="row wrap-form">
+    <label>Status
+      <select name="status">
+        <% for (const s of (user.role === 'admin' ? ['Submitted','In Progress','Resolved','Closed','Rejected'] : ['In Progress','Resolved','Rejected'])) { %>
+          <option <%= complaint.status === s ? 'selected' : '' %>><%= s %></option>
+        <% } %>
+      </select>
+    </label>
+    <label class="grow">Note (resolution note when marking Resolved)
+      <input name="note" placeholder="What was done at site…">
+    </label>
+    <button class="btn">Update status</button>
+  </form>
+
+  <% if (user.role === 'admin') { %>
+  <div class="grid-2 actions-grid">
+    <form method="post" action="/complaints/<%= complaint._id %>/assign">
+      <b>Assign / reassign officer</b>
+      <select name="officerUserId" required>
+        <option value="">Officer of this department…</option>
+        <% for (const o of officers) { %><option value="<%= o.userId._id %>"><%= o.userId.name %></option><% } %>
+      </select>
+      <input name="note" placeholder="Dispatch note (optional)">
+      <button class="btn sm">Assign</button>
+    </form>
+    <form method="post" action="/complaints/<%= complaint._id %>/escalate">
+      <b>Escalate</b>
+      <input name="reason" placeholder="Reason (optional)">
+      <button class="btn warn sm">⚡ Escalate priority</button>
+    </form>
+  </div>
+  <% } %>
+
+  <form method="post" action="/complaints/<%= complaint._id %>/tags" class="row wrap-form">
+    <label>Add tag<input name="add" placeholder="monsoon"></label>
+    <button class="btn sm ghost">+ Tag</button>
+    <label>Remove tag<input name="rm" placeholder="existing tag"></label>
+    <button class="btn sm ghost">− Remove</button>
+  </form>
+
+  <% if (user.role === 'admin') { %>
+  <form method="post" action="/complaints/<%= complaint._id %>/delete" onsubmit="return confirm('Delete the ticket and all its history?')">
+    <button class="btn danger sm">Delete ticket</button>
+  </form>
+  <% } %>
+</section>
+<% } %>
+
+<div class="two-col">
+  <section class="card">
+    <h2>Timeline</h2>
+    <ol class="timeline">
+      <% for (const u of updates) { %>
+        <li>
+          <div class="tl-head"><b><%= u.authorName %></b> <span class="badge dim"><%= u.kind %></span>
+            <small><%= u.createdAt.toISOString().slice(0, 16).replace('T', ' ') %></small></div>
+          <% if (u.oldStatus) { %><small class="muted"><%= u.oldStatus %> → <%= u.newStatus %></small><br><% } %>
+          <%= u.text %>
+        </li>
+      <% } %>
+      <% if (!updates.length) { %><li class="muted">No activity yet.</li><% } %>
+    </ol>
+    <form method="post" action="/complaints/<%= complaint._id %>/updates" class="row wrap-form">
+      <label class="grow">Add comment<input name="text" required placeholder="Write an update…"></label>
+      <button class="btn">Post</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Attachments</h2>
+    <% if (attachments.length) { %>
+      <ul class="plain-list">
+        <% for (const a of attachments) { %>
+          <li><a href="/attachments/<%= a._id %>/download"><%= a.name %></a> <small class="muted"><%= Math.ceil(a.size / 1024) %> KB · <%= a.mime %> · <%= a.createdAt.toISOString().slice(0, 10) %></small></li>
+        <% } %>
+      </ul>
+    <% } else { %><p class="muted">No files attached.</p><% } %>
+    <% if (isOwner || isStaff) { %>
+      <form method="post" action="/complaints/<%= complaint._id %>/attachments" id="attForm">
+        <label>Upload photo/document <small>(≤ 512 KB)</small><input type="file" id="attFile" accept="image/*,.pdf,.txt"></label>
+        <input type="hidden" name="data" id="attData"><input type="hidden" name="mime" id="attMime">
+        <label>Label<input name="name" id="attName" placeholder="site-photo.png"></label>
+        <button class="btn sm">Attach</button>
+      </form>
+      <script>
+        document.getElementById('attFile').addEventListener('change', e => {
+          const f = e.target.files[0]; if (!f) return;
+          document.getElementById('attName').value = document.getElementById('attName').value || f.name;
+          const r = new FileReader();
+          r.onload = () => { document.getElementById('attData').value = r.result; document.getElementById('attMime').value = f.type; };
+          if (f.size > 512 * 1024) { alert('File too large (max 512 KB).'); e.target.value = ''; return; }
+          r.readAsDataURL(f);
+        });
+        document.getElementById('attForm').addEventListener('submit', e => {
+          if (!document.getElementById('attData').value) { e.preventDefault(); alert('Choose a file first.'); }
+        });
+      </script>
+    <% } %>
+
+    <% if (isOwner && ['Resolved','Closed'].includes(complaint.status)) { %>
+      <h2 style="margin-top:1rem">Rate this resolution</h2>
+      <% if (myFeedback) { %><p class="muted">You already rated this ticket. Thank you!</p><% } else { %>
+      <form method="post" action="/complaints/<%= complaint._id %>/feedback">
+        <label>Rating
+          <select name="rating" required>
+            <option value="5">★★★★★ excellent</option><option value="4">★★★★ good</option>
+            <option value="3" selected>★★★ average</option><option value="2">★★ poor</option><option value="1">★ awful</option>
+          </select>
+        </label>
+        <label>Comment<textarea name="comment" rows="2"></textarea></label>
+        <button class="btn">Submit rating</button>
+      </form>
+      <% } %>
+      <% if (complaint.status === 'Resolved') { %>
+      <form method="post" action="/complaints/<%= complaint._id %>/close">
+        <button class="btn sm">I confirm this is fixed — close ticket</button>
+      </form>
+      <% } %>
+    <% } %>
+  </section>
+</div>
+
+<%- include('partials/foot') %>

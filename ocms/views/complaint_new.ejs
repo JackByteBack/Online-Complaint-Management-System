@@ -1,0 +1,54 @@
+<%- include('partials/top', { title: 'File Complaint' }) %>
+
+<h1>File a new complaint</h1>
+
+<form method="post" action="/complaints" class="card form-card" id="newComplaint">
+  <label>Title <small>(what &amp; where, one line)</small>
+    <input name="title" required minlength="8" maxlength="120" placeholder="Pothole on LBS Marg near Ashok Nagar bus stop">
+  </label>
+  <label>Description <small>(min 15 characters — details help dispatch)</small>
+    <textarea name="description" rows="4" required minlength="15" placeholder="What is wrong, since when, exact location, safety risk…"></textarea>
+  </label>
+  <div class="grid-2">
+    <label>Category
+      <select name="categoryCode" id="categorySelect" required>
+        <option value="">Choose…</option>
+        <% for (const c of categories) { %>
+          <option value="<%= c.code %>"><%= c.icon %> <%= c.name %> — <%= c.departmentId.name %></option>
+        <% } %>
+      </select>
+    </label>
+    <label>Priority
+      <select name="priority" id="prioritySelect">
+        <option>Medium</option><option>Low</option><option>High</option><option>Critical</option>
+      </select>
+    </label>
+  </div>
+  <div class="grid-2">
+    <label>Ward
+      <select name="wardId">
+        <option value="">Not sure</option>
+        <% for (const w of wards) { %><option value="<%= w._id %>"><%= w.name %> (<%= w.code %>)</option><% } %>
+      </select>
+    </label>
+    <label>Tags <small>(comma separated)</small>
+      <input name="tags" placeholder="monsoon, school-route">
+    </label>
+  </div>
+  <p class="sla-hint muted" id="slaHint">Pick a category and priority to see the SLA deadline we will stamp on the ticket.</p>
+  <button class="btn wide">Submit complaint</button>
+</form>
+
+<script id="slaData" type="application/json"><%- JSON.stringify(slaRules) %></script>
+<script>
+  const sla = JSON.parse(document.getElementById('slaData').textContent);
+  const cat = document.getElementById('categorySelect'), pri = document.getElementById('prioritySelect'), hint = document.getElementById('slaHint');
+  function upd() {
+    const r = sla.find(s => s.categoryCode === cat.value && s.priority === pri.value);
+    hint.textContent = r ? (`SLA: the department must close this within ${r.maxDays} day` + (r.maxDays === 1 ? '' : 's') + ' of filing.')
+                        : 'Pick a category and priority to see the SLA deadline we will stamp on the ticket.';
+  }
+  cat.addEventListener('change', upd); pri.addEventListener('change', upd);
+</script>
+
+<%- include('partials/foot') %>

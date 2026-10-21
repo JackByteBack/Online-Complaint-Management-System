@@ -1,0 +1,29 @@
+<%- include('partials/top', { title: 'Portal Settings' }) %>
+
+<h1>Portal settings</h1>
+<p class="muted">Key/value store in the <span class="mono">app_settings</span> collection — upsert on save.</p>
+
+<% if (current.ok) { %><p class="alert ok">Saved.</p><% } %>
+
+<section class="card">
+  <% for (const s of settings) { %>
+    <form method="post" action="/admin/settings" class="row wrap-form settings-row">
+      <input type="hidden" name="key" value="<%= s.key %>">
+      <label class="grow"><span class="mono"><%= s.key %></span>
+        <input name="value" value="<%= String(s.value) %>">
+      </label>
+      <button class="btn sm">Save</button>
+      <small class="muted">updated <%= s.updatedAt.toISOString().slice(0, 10) %></small>
+    </form>
+  <% } %>
+  <% if (!settings.length) { %><p class="muted">No settings stored yet.</p><% } %>
+
+  <h2>Add / override a key</h2>
+  <form method="post" action="/admin/settings" class="row wrap-form">
+    <label>Key<input name="key" required placeholder="portalOpen"></label>
+    <label>Value<input name="value" placeholder="true"></label>
+    <button class="btn">Save</button>
+  </form>
+</section>
+
+<%- include('partials/foot') %>

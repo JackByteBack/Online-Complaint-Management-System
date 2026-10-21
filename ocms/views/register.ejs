@@ -1,0 +1,16 @@
+<%- include('partials/top', { title: 'Register' }) %>
+
+<div class="auth-card card">
+  <h1>Create citizen account</h1>
+  <% if (typeof error !== 'undefined' && error) { %><p class="alert err"><%= error %></p><% } %>
+  <form method="post" action="/register">
+    <label>Full name<input name="name" required placeholder="Ravi Patil"></label>
+    <label>Email<input type="email" name="email" required placeholder="you@example.com"></label>
+    <label>Phone (optional)<input name="phone" placeholder="+91…"></label>
+    <label>Password (min 8 chars)<input type="password" name="password" required minlength="8"></label>
+    <button class="btn wide">Register</button>
+  </form>
+  <p class="muted">Already registered? <a href="/login">Login</a>.</p>
+</div>
+
+<%- include('partials/foot') %>

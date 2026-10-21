@@ -1,0 +1,82 @@
+<%- include('partials/top', { title: 'Search Complaints' }) %>
+
+<h1>Search &amp; filter complaints</h1>
+<p class="muted">Text search runs against a <span class="mono">text index</span> (title · description · tags). Combine it with any filters below — all filters are applied server-side as one MongoDB query.</p>
+
+<form method="get" action="/search" class="card filter-form">
+  <label class="search-line">Search text
+    <input name="q" value="<%= current.q || '' %>" placeholder="e.g. pothole school monsoon">
+  </label>
+  <div class="grid-3">
+    <label>Category
+      <select name="category">
+        <option value="">All</option>
+        <% for (const c of categories) { %>
+          <option value="<%= c.code %>" <%= current.category === c.code ? 'selected' : '' %>><%= c.code %> — <%= c.name %></option>
+        <% } %>
+      </select>
+    </label>
+    <label>Department
+      <select name="department">
+        <option value="">All</option>
+        <% for (const d of departments) { %>
+          <option value="<%= d._id %>" <%= current.department && current.department === String(d._id) ? 'selected' : '' %>><%= d.name %></option>
+        <% } %>
+      </select>
+    </label>
+    <label>Only overdue (SLA breached)
+      <label class="check"><input type="checkbox" name="due" value="1" <%= current.due === '1' ? 'checked' : '' %>> overdue only</label>
+    </label>
+  </div>
+  <div class="grid-3">
+    <fieldset><legend>Priority</legend>
+      <% for (const p of ['Low', 'Medium', 'High', 'Critical']) { %>
+        <label class="check"><input type="checkbox" name="priority" value="<%= p %>" <%= (current.priority || []).includes(p) ? 'checked' : '' %>> <%= p %></label>
+      <% } %>
+    </fieldset>
+    <fieldset><legend>Status</legend>
+      <% for (const s of ['Submitted', 'In Progress', 'Resolved', 'Closed', 'Rejected']) { %>
+        <label class="check"><input type="checkbox" name="status" value="<%= s %>" <%= (current.status || []).includes(s) ? 'checked' : '' %>> <%= s %></label>
+      <% } %>
+    </fieldset>
+    <fieldset class="date-fieldset"><legend>Filed between</legend>
+      <label class="check">From <input type="date" name="from" value="<%= current.from || '' %>"></label>
+      <label class="check">To <input type="date" name="to" value="<%= current.to || '' %>"></label>
+      <label>Tags ($all)<input name="tags" value="<%= current.tags || '' %>" placeholder="monsoon,urgent"></label>
+    </fieldset>
+  </div>
+  <div class="row">
+    <button class="btn">Apply filters</button>
+    <a class="btn ghost" href="/search">Reset</a>
+  </div>
+</form>
+
+<section class="card">
+  <h2><%= total %> matching ticket<%= total === 1 ? '' : 's' %></h2>
+  <% if (complaints.length) { %>
+    <table>
+      <tr><th>Ticket</th><th>Title</th><th>Cat.</th><th>Status</th><th>Priority</th><th>Ward</th><th>Filed</th><th>Due</th></tr>
+      <% for (const c of complaints) { %>
+        <tr>
+          <td class="mono"><a href="/complaints/<%= c._id %>"><%= c.ticketNo %></a></td>
+          <td><%= c.title %></td>
+          <td class="mono"><%= c.categoryCode %></td>
+          <td><span class="badge st-<%= c.status.replace(' ', '') %>"><%= c.status %></span></td>
+          <td><span class="badge pr-<%= c.priority %>"><%= c.priority %></span></td>
+          <td><%= c.wardId ? c.wardId.name : '—' %></td>
+          <td><%= c.createdAt.toISOString().slice(0, 10) %></td>
+          <td><%= c.dueAt ? c.dueAt.toISOString().slice(0, 10) : '—' %></td>
+        </tr>
+      <% } %>
+    </table>
+    <% if (pageMeta.pages > 1) { %>
+      <div class="pager">
+        <% if (pageMeta.prev) { %><a class="btn ghost sm" href="/search?<%= new URLSearchParams({ ...current, page: pageMeta.page - 1 }) %>">← Prev</a><% } %>
+        <span class="muted">Page <%= pageMeta.page %> / <%= pageMeta.pages %></span>
+        <% if (pageMeta.next) { %><a class="btn ghost sm" href="/search?<%= new URLSearchParams({ ...current, page: pageMeta.page + 1 }) %>">Next →</a><% } %>
+      </div>
+    <% } %>
+  <% } else { %><p class="muted">No tickets matched. Loosen the filters.</p><% } %>
+</section>
+
+<%- include('partials/foot') %>

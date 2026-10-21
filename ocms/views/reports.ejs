@@ -1,0 +1,95 @@
+<%- include('partials/top', { title: 'Reports' }) %>
+
+<h1>Reports &amp; analytics</h1>
+<p class="muted">Every table below is the output of its own <span class="mono">aggregation pipeline</span> ($match → $group → $sort → $project, with $lookup / $unwind where noted) run directly by MongoDB.</p>
+
+<div class="kpi-row">
+  <div class="stat card"><b><%= kpi.openCount %></b><span>open tickets</span></div>
+  <div class="stat card"><b><%= kpi.slaBreached %></b><span>SLA breached</span></div>
+  <div class="stat card"><b><%= kpi.avgRating.avg || '—' %></b><span>avg citizen rating (of <%= kpi.avgRating.n %>)</span></div>
+</div>
+
+<form method="get" action="/reports" class="row wrap-form">
+  <label>Filter the matrix by department
+    <select name="departmentId">
+      <option value="">All departments</option>
+      <% for (const d of departments) { %>
+        <option value="<%= d._id %>" <%= String(deptFilter) === String(d._id) ? 'selected' : '' %>><%= d.name %></option>
+      <% } %>
+    </select>
+  </label>
+  <button class="btn sm">Apply</button>
+</form>
+
+<%
+  const maxFiled = Math.max(1, ...monthlyTrend.map(m => m.filed));
+  const maxResolved = Math.max(1, ...deptPerformance.map(d => d.resolved));
+  const maxTag = Math.max(1, ...topTags.map(t => t.count));
+%>
+
+<section class="card">
+  <h2>Pipeline 1 · Department performance</h2>
+  <p class="muted">$match(status ∈ Resolved/Closed) → <b>$group</b>(resolved count, $avg resolution days) → <b>$sort</b> → <b>$lookup</b>(departments) → <b>$unwind</b> → <b>$project</b>($round)</p>
+  <% if (deptPerformance.length) { %>
+    <table>
+      <tr><th>Department</th><th>Resolved</th><th>Avg days to resolve</th><th></th></tr>
+      <% for (const d of deptPerformance) { %>
+        <tr>
+          <td><%= d.name || '—' %> <span class="mono muted"><%= d.code || '' %></span></td>
+          <td><%= d.resolved %></td>
+          <td><%= d.avgDays ?? '—' %></td>
+          <td><div class="bar"><span style="width: <%= Math.round(d.resolved / maxResolved * 100) %>%"></span></div></td>
+        </tr>
+      <% } %>
+    </table>
+  <% } else { %><p class="muted">No resolved tickets yet.</p><% } %>
+</section>
+
+<section class="card">
+  <h2>Pipeline 2 · Monthly trend (last 6 months)</h2>
+  <p class="muted">$match(createdAt ≥ −183d) → <b>$group</b>($dateToString by month, $cond-resolved count) → <b>$project</b> → <b>$sort</b> → $limit(6)</p>
+  <table>
+    <tr><th>Month</th><th>Filed</th><th>Resolved</th><th></th></tr>
+    <% for (const m of monthlyTrend) { %>
+      <tr>
+        <td class="mono"><%= m.month %></td>
+        <td><%= m.filed %></td>
+        <td><%= m.resolved %></td>
+        <td><div class="bar"><span style="width: <%= Math.round(m.filed / maxFiled * 100) %>%"></span></div></td>
+      </tr>
+    <% } %>
+    <% if (!monthlyTrend.length) { %><tr><td colspan="4" class="muted">No data in range.</td></tr><% } %>
+  </table>
+</section>
+
+<section class="card">
+  <h2>Pipeline 3 · Status × priority matrix</h2>
+  <p class="muted">$match(optional department filter) → <b>$group</b>(composite key) → <b>$sort</b>(count) → <b>$project</b></p>
+  <table>
+    <tr><th>Status</th><th>Priority</th><th>Count</th></tr>
+    <% for (const s of statusMatrix) { %>
+      <tr>
+        <td><span class="badge st-<%= s.status.replace(' ', '') %>"><%= s.status %></span></td>
+        <td><span class="badge pr-<%= s.priority %>"><%= s.priority %></span></td>
+        <td><b><%= s.count %></b></td>
+      </tr>
+    <% } %>
+    <% if (!statusMatrix.length) { %><tr><td colspan="3" class="muted">No data.</td></tr><% } %>
+  </table>
+</section>
+
+<section class="card">
+  <h2>Pipeline 4 · Top complaint tags</h2>
+  <p class="muted">$match(tags $ne []) → <b>$unwind</b>(array handling) → <b>$group</b> → <b>$sort</b> → $limit(10)</p>
+  <% if (topTags.length) { %>
+    <div class="tag-bars">
+      <% for (const t of topTags) { %>
+        <div class="tag-bar"><span class="mono">#<%= t.tag %></span>
+          <div class="bar"><span style="width: <%= Math.round(t.count / maxTag * 100) %>%"></span></div>
+          <b><%= t.count %></b></div>
+      <% } %>
+    </div>
+  <% } else { %><p class="muted">No tags in use.</p><% } %>
+</section>
+
+<%- include('partials/foot') %>

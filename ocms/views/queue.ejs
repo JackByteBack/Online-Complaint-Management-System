@@ -1,0 +1,45 @@
+<%- include('partials/top', { title: 'Officer Queue' }) %>
+
+<h1>My queue</h1>
+<p class="muted">Open tickets in your department plus anything assigned to you personally. Most urgent first.</p>
+
+<form method="get" action="/queue" class="card row wrap-form">
+  <label>Priority
+    <select name="priority">
+      <option value="">All</option>
+      <% for (const p of ['Low', 'Medium', 'High', 'Critical']) { %>
+        <option <%= current.priority === p ? 'selected' : '' %>><%= p %></option>
+      <% } %>
+    </select>
+  </label>
+  <button class="btn">Filter</button>
+  <span class="muted"><%= total %> open ticket<%= total === 1 ? '' : 's' %></span>
+</form>
+
+<section class="card">
+  <% if (complaints.length) { %>
+    <table>
+      <tr><th>Ticket</th><th>Title</th><th>Cat.</th><th>Priority</th><th>Status</th><th>Due</th><th></th></tr>
+      <% for (const c of complaints) { %>
+        <tr>
+          <td class="mono"><%= c.ticketNo %></td>
+          <td><%= c.title %></td>
+          <td class="mono"><%= c.categoryCode %></td>
+          <td><span class="badge pr-<%= c.priority %>"><%= c.priority %></span></td>
+          <td><span class="badge st-<%= c.status.replace(' ', '') %>"><%= c.status %></span></td>
+          <td><%= c.dueAt ? c.dueAt.toISOString().slice(0, 10) : '—' %></td>
+          <td><a class="btn sm ghost" href="/complaints/<%= c._id %>">Open</a></td>
+        </tr>
+      <% } %>
+    </table>
+    <% if (pageMeta.pages > 1) { %>
+      <div class="pager">
+        <% if (pageMeta.prev) { %><a class="btn ghost sm" href="/queue?<%= new URLSearchParams({ ...current, page: pageMeta.page - 1 }) %>">← Prev</a><% } %>
+        <span class="muted">Page <%= pageMeta.page %> / <%= pageMeta.pages %></span>
+        <% if (pageMeta.next) { %><a class="btn ghost sm" href="/queue?<%= new URLSearchParams({ ...current, page: pageMeta.page + 1 }) %>">Next →</a><% } %>
+      </div>
+    <% } %>
+  <% } else { %><p class="muted">Queue is clear. 🎉</p><% } %>
+</section>
+
+<%- include('partials/foot') %>

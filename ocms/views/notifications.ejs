@@ -1,0 +1,23 @@
+<%- include('partials/top', { title: 'Notifications' }) %>
+
+<div class="row between">
+  <h1>Notifications</h1>
+  <form method="post" action="/notifications/read"><button class="btn sm">Mark all as read</button></form>
+</div>
+
+<section class="card">
+  <% if (items.length) { %>
+    <ul class="plain-list notif-list">
+      <% for (const n of items) { %>
+        <li class="<%= n.read ? 'read' : 'unread' %>">
+          <% if (n.link) { %><a href="<%= n.link %>"><b><%= n.title %></b></a><% } else { %><b><%= n.title %></b><% } %>
+          <% if (n.body) { %><br><%= n.body %><% } %>
+          <br><small class="muted"><%= n.createdAt.toISOString().slice(0, 16).replace('T', ' ') %></small>
+          <%= n.read ? '' : '<span class="badge new">new</span>' %>
+        </li>
+      <% } %>
+    </ul>
+  <% } else { %><p class="muted">No notifications.</p><% } %>
+</section>
+
+<%- include('partials/foot') %>

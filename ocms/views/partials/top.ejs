@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= typeof title !== 'undefined' ? title : 'Home' %> · <%= org %></title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<% user = typeof user !== 'undefined' ? user : null;
+   org = typeof org !== 'undefined' ? org : 'City Grievance Portal';
+   unread = typeof unread !== 'undefined' ? unread : 0; %>
+<header class="topbar">
+  <div class="wrap bar-inner">
+    <a class="brand" href="/"><span class="logo">◈</span> <%= org %></a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/search">Search</a>
+      <a href="/faqs">FAQs</a>
+      <% if (user && user.role === 'citizen') { %>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/complaints/new">File Complaint</a>
+      <% } else if (user && user.role === 'officer') { %>
+        <a href="/queue">My Queue</a>
+        <a href="/reports">Reports</a>
+        <a href="/search">All Tickets</a>
+      <% } else if (user && user.role === 'admin') { %>
+        <a href="/admin">Admin</a>
+        <a href="/admin/manage">Manage</a>
+        <a href="/admin/users">Users</a>
+        <a href="/reports">Reports</a>
+        <a href="/audit">Audit Log</a>
+      <% } %>
+    </nav>
+    <div class="bar-right">
+      <% if (user) { %>
+        <a class="bell" href="/notifications" title="Notifications">🔔 <% if (unread) { %><span class="pill"><%= unread %></span><% } %></a>
+        <% if (user.role === 'citizen') { %><a href="/profile"><%= user.name %></a><% } else { %><span class="muted"><%= user.name %> · <%= user.role %></span><% } %>
+        <form method="post" action="/logout" class="inline"><button class="btn ghost sm">Logout</button></form>
+      <% } else { %>
+        <a class="btn ghost sm" href="/login">Login</a>
+        <a class="btn sm" href="/register">Register</a>
+      <% } %>
+    </div>
+  </div>
+</header>
+<main class="wrap">

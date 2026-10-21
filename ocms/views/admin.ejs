@@ -1,0 +1,53 @@
+<%- include('partials/top', { title: 'Admin' }) %>
+
+<h1>Admin overview</h1>
+
+<div class="kpi-row">
+  <a class="stat card" href="/search?status=Submitted&status=In Progress"><b><%= kpi.open %></b><span>open tickets</span></a>
+  <div class="stat card"><b><%= kpi.thisMonth %></b><span>filed this month</span></div>
+  <a class="stat card" href="/admin/users?role=citizen&role=officer"><b><%= kpi.users %></b><span>active users</span></a>
+  <a class="stat card" href="/search?due=1"><b class="<%= kpi.breached ? 'red' : '' %>"><%= kpi.breached %></b><span>SLA breached</span></a>
+  <div class="stat card"><b><%= kpi.escalations %></b><span>open escalations</span></div>
+</div>
+
+<div class="two-col">
+  <section class="card">
+    <h2>SLA-breach watchlist</h2>
+    <% if (breachedDocs.length) { %>
+      <table>
+        <tr><th>Ticket</th><th>Due</th><th>Dept</th></tr>
+        <% for (const c of breachedDocs) { %>
+          <tr>
+            <td class="mono"><a href="/complaints/<%= c._id %>"><%= c.ticketNo %></a> <small class="muted"><%= c.title.slice(0, 30) %>…</small></td>
+            <td class="red mono"><%= c.dueAt.toISOString().slice(0, 10) %></td>
+            <td><%= c.departmentId ? c.departmentId.name : '—' %></td>
+          </tr>
+        <% } %>
+      </table>
+    <% } else { %><p class="muted">Nothing overdue. 👏</p><% } %>
+  </section>
+
+  <section class="card">
+    <h2>Recent audit activity <a class="muted sm-link" href="/audit">all →</a></h2>
+    <ul class="plain-list">
+      <% for (const l of recentLogs) { %>
+        <li><span class="badge dim"><%= l.action %></span> <b><%= l.actorName %></b> on <span class="mono"><%= l.entity %></span><br>
+        <small><%= l.createdAt.toISOString().slice(0, 16).replace('T', ' ') %></small></li>
+      <% } %>
+      <% if (!recentLogs.length) { %><li class="muted">No activity logged yet.</li><% } %>
+    </ul>
+  </section>
+</div>
+
+<section class="card">
+  <h2>Quick links</h2>
+  <div class="row">
+    <a class="btn ghost" href="/admin/manage">Enterprises · Manage master data</a>
+    <a class="btn ghost" href="/admin/users">Users</a>
+    <a class="btn ghost" href="/reports">Reports</a>
+    <a class="btn ghost" href="/admin/settings">Portal settings</a>
+    <a class="btn ghost" href="/audit">Audit log</a>
+  </div>
+</section>
+
+<%- include('partials/foot') %>

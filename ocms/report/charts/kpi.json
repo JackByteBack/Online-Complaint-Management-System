@@ -1,0 +1,64 @@
+{
+  "open": 18,
+  "slaBreached": 18,
+  "avgRating": 2.69,
+  "ratedTickets": 13,
+  "deptPerformance": [
+    {
+      "resolved": 4,
+      "name": "Roads & Transport",
+      "code": "ROAD",
+      "avgDays": 9.5
+    },
+    {
+      "resolved": 4,
+      "name": "Waste Management",
+      "code": "WST",
+      "avgDays": 9.2
+    },
+    {
+      "resolved": 3,
+      "name": "Public Health",
+      "code": "HLT",
+      "avgDays": 8
+    },
+    {
+      "resolved": 2,
+      "name": "Water Supply",
+      "code": "WTR",
+      "avgDays": 9
+    }
+  ],
+  "monthlyTrend": [
+    {
+      "filed": 4,
+      "resolved": 1,
+      "month": "2026-05"
+    },
+    {
+      "filed": 7,
+      "resolved": 2,
+      "month": "2026-06"
+    },
+    {
+      "filed": 1,
+      "resolved": 0,
+      "month": "2026-07"
+    },
+    {
+      "filed": 9,
+      "resolved": 4,
+      "month": "2026-08"
+    },
+    {
+      "filed": 9,
+      "resolved": 4,
+      "month": "2026-09"
+    },
+    {
+      "filed": 4,
+      "resolved": 2,
+      "month": "2026-10"
+    }
+  ]
+}

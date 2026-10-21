@@ -1,0 +1,14 @@
+<%- include('partials/top', { title: 'FAQs' }) %>
+
+<h1>Frequently asked questions</h1>
+
+<% if (!list.length) { %><p class="muted">No FAQs published yet.</p><% } %>
+<% for (const f of list) { %>
+  <details class="card faq">
+    <summary><%= f.question %></summary>
+    <p><%= f.answer %></p>
+    <% if (f.categoryCode) { %><small class="muted mono">category: <%= f.categoryCode %></small><% } %>
+  </details>
+<% } %>
+
+<%- include('partials/foot') %>

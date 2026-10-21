@@ -1,0 +1,20 @@
+<%- include('partials/top', { title: 'Login' }) %>
+
+<div class="auth-card card">
+  <h1>Login</h1>
+  <% if (typeof error !== 'undefined' && error) { %><p class="alert err"><%= error %></p><% } %>
+  <form method="post" action="/login">
+    <label>Email or phone<input name="email" required autofocus placeholder="you@example.com"></label>
+    <label>Password<input type="password" name="password" required minlength="8"></label>
+    <button class="btn wide">Login</button>
+  </form>
+  <p class="muted">No account? <a href="/register">Register as a citizen</a>.</p>
+  <div class="demo-box">
+    <b>Demo logins</b> (seeded):<br>
+    admin@ocms.test · Admin@12345<br>
+    road@ocms.test · Officer@123 (officer)<br>
+    ravi@proton.test · Citizen@123 (citizen)
+  </div>
+</div>
+
+<%- include('partials/foot') %>

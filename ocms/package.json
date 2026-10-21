@@ -1,0 +1,19 @@
+{
+  "name": "ocms",
+  "version": "1.0.0",
+  "description": "Online Complaint Management System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node seed.js",
+    "smoke": "node smoke.js",
+    "spot": "node spotcheck.js",
+    "shots": "node screenshot.js",
+    "charts": "node report/charts.js"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "mongoose": "^8.19.0"
+  }
+}

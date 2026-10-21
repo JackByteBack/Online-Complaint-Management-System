@@ -1,0 +1,60 @@
+<%- include('partials/top', { title: 'Users' }) %>
+
+<h1>Users</h1>
+
+<form method="get" action="/admin/users" class="card row wrap-form">
+  <label>Search ($or · name/email)
+    <input name="q" value="<%= current.q || '' %>" placeholder="ravi or @proton">
+  </label>
+  <fieldset><legend>Role (★ $in)</legend>
+    <% for (const r of ['citizen', 'officer', 'admin']) { %>
+      <label class="check"><input type="checkbox" name="role" value="<%= r %>" <%= (current.role || []).includes(r) ? 'checked' : '' %>> <%= r %></label>
+    <% } %>
+  </fieldset>
+  <button class="btn">Apply</button>
+  <a class="btn ghost" href="/admin/users">Reset</a>
+  <span class="muted"><%= total %> user<%= total === 1 ? '' : 's' %></span>
+</form>
+
+<section class="card">
+  <table>
+    <tr><th>Name</th><th>Email / phone</th><th>Role</th><th>Dept (officer)</th><th>Active</th><th>Stats</th><th>Save</th></tr>
+    <% for (const u of users) { %>
+      <tr>
+        <form method="post" action="/admin/users/<%= u._id %>">
+        <td><%= u.name %></td>
+        <td class="mono"><%= u.email %><br><small class="muted"><%= u.phone || '—' %></small></td>
+        <td>
+          <select name="role">
+            <% for (const r of ['citizen', 'officer', 'admin']) { %>
+              <option <%= u.role === r ? 'selected' : '' %>><%= r %></option>
+            <% } %>
+          </select>
+        </td>
+        <td>
+          <select name="departmentId">
+            <option value="">n/a</option>
+            <% for (const d of departments) { %>
+              <option value="<%= d._id %>"><%= d.name %></option>
+            <% } %>
+          </select>
+          <input name="designation" placeholder="Designation" class="cell-input sm">
+        </td>
+        <td><label class="check"><input type="checkbox" name="active" <%= u.active ? 'checked' : '' %>> on</label></td>
+        <td><small class="muted"><%= u.stats ? u.stats.complaintsFiled : 0 %> filed · <%= u.stats ? u.stats.resolvedReceived : 0 %> rated</small></td>
+        <td><button class="btn sm">Save</button></td>
+        </form>
+      </tr>
+    <% } %>
+  </table>
+  <p class="muted sm-note">Saving a role change immediately invalidates that user's sessions (deleteMany on sessions). Department only applies when role = officer.</p>
+  <% if (pageMeta.pages > 1) { %>
+    <div class="pager">
+      <% if (pageMeta.prev) { %><a class="btn ghost sm" href="/admin/users?<%= new URLSearchParams({ ...current, page: pageMeta.page - 1 }) %>">← Prev</a><% } %>
+      <span class="muted">Page <%= pageMeta.page %> / <%= pageMeta.pages %></span>
+      <% if (pageMeta.next) { %><a class="btn ghost sm" href="/admin/users?<%= new URLSearchParams({ ...current, page: pageMeta.page + 1 }) %>">Next →</a><% } %>
+    </div>
+  <% } %>
+</section>
+
+<%- include('partials/foot') %>

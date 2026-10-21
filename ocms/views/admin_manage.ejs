@@ -1,0 +1,184 @@
+<%- include('partials/top', { title: 'Manage Master Data' }) %>
+
+<h1>Manage master data</h1>
+<% if (current.err) { %><p class="alert err"><%= current.err %></p><% } %>
+
+<section class="card">
+  <h2>Categories</h2>
+  <form method="post" action="/admin/categories" class="row wrap-form">
+    <label>Code<input name="code" placeholder="NOISE" required maxlength="12"></label>
+    <label>Name<input name="name" placeholder="Noise Pollution" required></label>
+    <label>Department
+      <select name="departmentId" required>
+        <option value="">—</option>
+        <% for (const d of departments) { %><option value="<%= d._id %>"><%= d.name %></option><% } %>
+      </select>
+    </label>
+    <label>Icon<input name="icon" placeholder="📢" maxlength="4"></label>
+    <button class="btn">Add category</button>
+  </form>
+  <table>
+    <tr><th>Code</th><th>Name</th><th>Department</th><th>Filed</th><th>Active</th><th>Edit</th><th></th></tr>
+    <% for (const c of categories) { %>
+      <tr>
+        <td class="mono"><%= c.code %></td>
+        <form method="post" action="/admin/categories/<%= c._id %>">
+        <td><input name="name" value="<%= c.name %>" class="cell-input"></td>
+        <td>
+          <select name="departmentId">
+            <% for (const d of departments) { %>
+              <option value="<%= d._id %>" <%= (c.departmentId && String(c.departmentId._id) === String(d._id)) ? 'selected' : '' %>><%= d.name %></option>
+            <% } %>
+          </select>
+        </td>
+        <td><%= c.totalFiled %></td>
+        <td><label class="check"><input type="checkbox" name="active" <%= c.active ? 'checked' : '' %>> on</label></td>
+        <td><button class="btn sm ghost">Save</button></td>
+        </form>
+        <td>
+          <form method="post" action="/admin/categories/<%= c._id %>/delete" onsubmit="return confirm('Delete <%= c.code %>?')">
+            <button class="btn sm danger">✕</button>
+          </form>
+        </td>
+      </tr>
+    <% } %>
+  </table>
+  <p class="muted sm-note">Delete is guarded: a category with filed complaints cannot be deleted.</p>
+</section>
+
+<section class="card">
+  <h2>Departments</h2>
+  <form method="post" action="/admin/departments" class="row wrap-form">
+    <label>Code<input name="code" placeholder="PWD" required maxlength="12"></label>
+    <label>Name<input name="name" placeholder="Public Works" required></label>
+    <label>Head<input name="head" placeholder="Officer name"></label>
+    <label>Email<input name="email" type="email" placeholder="pwd@city.gov"></label>
+    <label>Handles<input name="categories" placeholder="ROAD,TRAFFIC"></label>
+    <button class="btn">Add department</button>
+  </form>
+  <table>
+    <tr><th>Code</th><th>Name</th><th>Head</th><th>Email</th><th>Handles</th><th></th></tr>
+    <% for (const d of departments) { %>
+      <tr>
+        <td class="mono"><%= d.code %></td><td><%= d.name %></td><td><%= d.head || '—' %></td>
+        <td class="mono"><%= d.email || '—' %></td><td class="mono"><%= (d.categories || []).join(',') || '—' %></td>
+        <td>
+          <form method="post" action="/admin/departments/<%= d._id %>/delete" onsubmit="return confirm('Delete <%= d.code %>?')">
+            <button class="btn sm danger">✕</button>
+          </form>
+        </td>
+      </tr>
+    <% } %>
+  </table>
+  <p class="muted sm-note">Delete is guarded: a department with linked categories or complaints cannot be deleted.</p>
+</section>
+
+<section class="card">
+  <h2>Wards</h2>
+  <form method="post" action="/admin/wards" class="row wrap-form">
+    <label>Code<input name="code" placeholder="W-F6" required maxlength="10"></label>
+    <label>Name<input name="name" placeholder="Powai" required></label>
+    <label>City<input name="city" placeholder="Mumbai"></label>
+    <label>Population<input name="population" type="number" min="0"></label>
+    <button class="btn">Add ward</button>
+  </form>
+  <table>
+    <tr><th>Code</th><th>Name</th><th>City</th><th>Population</th><th></th></tr>
+    <% for (const w of wards) { %>
+      <tr>
+        <td class="mono"><%= w.code %></td><td><%= w.name %></td><td><%= w.city %></td><td><%= w.population %></td>
+        <td>
+          <form method="post" action="/admin/wards/<%= w._id %>/delete" onsubmit="return confirm('Delete ward <%= w.code %>?')">
+            <button class="btn sm danger">✕</button>
+          </form>
+        </td>
+      </tr>
+    <% } %>
+  </table>
+</section>
+
+<section class="card">
+  <h2>SLA rules</h2>
+  <form method="post" action="/admin/sla" class="row wrap-form">
+    <label>Category
+      <select name="categoryCode" required>
+        <% for (const c of categories) { %><option value="<%= c.code %>"><%= c.code %></option><% } %>
+      </select>
+    </label>
+    <label>Priority
+      <select name="priority"><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select>
+    </label>
+    <label>Max days<input name="maxDays" type="number" min="1" max="90" value="10" required></label>
+    <button class="btn">Upsert rule</button>
+  </form>
+  <table>
+    <tr><th>Category</th><th>Priority</th><th>Max days</th></tr>
+    <% for (const r of slaRules) { %>
+      <tr><td class="mono"><%= r.categoryCode %></td><td><%= r.priority %></td><td><%= r.maxDays %></td></tr>
+    <% } %>
+  </table>
+  <p class="muted sm-note">Saving over an existing category+priority pair updates it (upsert on a compound unique index).</p>
+</section>
+
+<section class="card">
+  <h2>FAQs</h2>
+  <form method="post" action="/admin/faqs" class="stack-form">
+    <label>Question<input name="question" required></label>
+    <label>Answer<textarea name="answer" rows="2" required></textarea></label>
+    <div class="row wrap-form">
+      <label>Order<input name="order" type="number" value="99"></label>
+      <label>Category code<input name="categoryCode" placeholder="ROAD (optional)"></label>
+      <button class="btn">Add FAQ</button>
+    </div>
+  </form>
+  <table>
+    <tr><th>Order</th><th>Question</th><th>Answer</th><th>Active</th><th>Save</th><th></th></tr>
+    <% for (const f of faqs) { %>
+      <tr>
+        <form method="post" action="/admin/faqs/<%= f._id %>">
+        <td><input name="order" value="<%= f.order %>" type="number" class="cell-input sm"></td>
+        <td><input name="question" value="<%= f.question %>" class="cell-input"></td>
+        <td><input name="answer" value="<%= f.answer %>" class="cell-input"></td>
+        <td><label class="check"><input type="checkbox" name="active" <%= f.active ? 'checked' : '' %>> on</label></td>
+        <td><button class="btn sm ghost">Save</button></td>
+        </form>
+        <td>
+          <form method="post" action="/admin/faqs/<%= f._id %>/delete"><button class="btn sm danger">✕</button></form>
+        </td>
+      </tr>
+    <% } %>
+  </table>
+</section>
+
+<section class="card">
+  <h2>Announcements</h2>
+  <form method="post" action="/admin/announcements" class="stack-form">
+    <label>Title<input name="title" required></label>
+    <label>Body<textarea name="body" rows="2" required></textarea></label>
+    <div class="row wrap-form">
+      <label>Audience
+        <select name="audience"><option>all</option><option value="citizen">citizen</option><option value="staff">staff</option></select>
+      </label>
+      <button class="btn">Publish</button>
+    </div>
+  </form>
+  <table>
+    <tr><th>Title</th><th>Body</th><th>Audience</th><th>Active</th><th></th><th></th></tr>
+    <% for (const a of announcements) { %>
+      <tr>
+        <td><b><%= a.title %></b></td>
+        <td><small><%= a.body.slice(0, 60) %>…</small></td>
+        <td><%= a.audience %></td>
+        <td><%= a.active ? '✅' : '⬜' %></td>
+        <td>
+          <form method="post" action="/admin/announcements/<%= a._id %>/toggle"><button class="btn sm ghost"><%= a.active ? 'Deactivate' : 'Activate' %></button></form>
+        </td>
+        <td>
+          <form method="post" action="/admin/announcements/<%= a._id %>/delete"><button class="btn sm danger">✕</button></form>
+        </td>
+      </tr>
+    <% } %>
+  </table>
+</section>
+
+<%- include('partials/foot') %>

@@ -1,0 +1,41 @@
+<%- include('partials/top', { title: 'Audit Log' }) %>
+
+<h1>Audit log</h1>
+
+<form method="get" action="/audit" class="row wrap-form">
+  <label>Action
+    <select name="action">
+      <option value="">All actions</option>
+      <% for (const a of ['create', 'update', 'delete', 'assign', 'escalate', 'login', 'logout', 'register']) { %>
+        <option value="<%= a %>" <%= (current.action || []).includes(a) ? 'selected' : '' %>><%= a %></option>
+      <% } %>
+    </select>
+  </label>
+  <button class="btn">Filter</button>
+  <span class="muted"><%= total %> entr<%= total === 1 ? 'y' : 'ies' %></span>
+</form>
+
+<section class="card">
+  <table>
+    <tr><th>When</th><th>Actor</th><th>Action</th><th>Entity</th><th>Details</th></tr>
+    <% for (const l of logs) { %>
+      <tr>
+        <td class="mono"><%= l.createdAt.toISOString().slice(0, 16).replace('T', ' ') %></td>
+        <td><%= l.actorName || 'system' %></td>
+        <td><span class="badge dim a-<%= l.action %>"><%= l.action %></span></td>
+        <td class="mono"><%= l.entity || '—' %></td>
+        <td><small class="mono"><%= l.meta ? JSON.stringify(l.meta).slice(0, 80) : '—' %></small></td>
+      </tr>
+    <% } %>
+    <% if (!logs.length) { %><tr><td colspan="5" class="muted">No audit entries.</td></tr><% } %>
+  </table>
+  <% if (pageMeta.pages > 1) { %>
+    <div class="pager">
+      <% if (pageMeta.prev) { %><a class="btn ghost sm" href="/audit?<%= new URLSearchParams({ ...current, page: pageMeta.page - 1 }) %>">← Prev</a><% } %>
+      <span class="muted">Page <%= pageMeta.page %> / <%= pageMeta.pages %></span>
+      <% if (pageMeta.next) { %><a class="btn ghost sm" href="/audit?<%= new URLSearchParams({ ...current, page: pageMeta.page + 1 }) %>">Next →</a><% } %>
+    </div>
+  <% } %>
+</section>
+
+<%- include('partials/foot') %>

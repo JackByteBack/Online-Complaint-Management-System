@@ -1,0 +1,32 @@
+<%- include('partials/top', { title: 'My Profile' }) %>
+
+<h1>My profile</h1>
+
+<form method="post" action="/profile" class="card form-card">
+  <div class="grid-2">
+    <label>Full name<input name="name" value="<%= user.name %>" required></label>
+    <label>Email<input value="<%= user.email %>" disabled></label>
+  </div>
+  <div class="grid-2">
+    <label>Phone<input name="phone" value="<%= user.phone || '' %>"></label>
+    <span></span>
+  </div>
+  <h2>Address</h2>
+  <% const a = citizen.address || {}; %>
+  <label>Street / building<input name="street" value="<%= a.street || '' %>" placeholder="12 Hill Rd"></label>
+  <div class="grid-2">
+    <label>City<input name="city" value="<%= a.city || '' %>" placeholder="Mumbai"></label>
+    <label>Pincode<input name="pincode" value="<%= a.pincode || '' %>" maxlength="10" placeholder="400050"></label>
+  </div>
+  <label>Ward
+    <select name="wardId">
+      <option value="">Not sure</option>
+      <% for (const w of wards) { %>
+        <option value="<%= w._id %>" <%= citizen.address && String(citizen.address.wardId && citizen.address.wardId._id) === String(w._id) ? 'selected' : '' %>><%= w.name %> (<%= w.code %>)</option>
+      <% } %>
+    </select>
+  </label>
+  <button class="btn">Save profile</button>
+</form>
+
+<%- include('partials/foot') %>

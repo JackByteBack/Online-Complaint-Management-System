@@ -1,0 +1,62 @@
+<%- include('partials/top', { title: 'Home' }) %>
+
+<section class="hero">
+  <div>
+    <h1>Report city issues.<br>Track them until they're fixed.</h1>
+    <p> Roads, water, waste, power — file a complaint, watch the status live, and rate the resolution. Every ticket carries an SLA deadline from the moment it is filed. </p>
+    <div class="row">
+      <% if (!user) { %>
+        <a class="btn" href="/register">Create account</a>
+        <a class="btn ghost" href="/login">Login</a>
+      <% } else if (user.role === 'citizen') { %>
+        <a class="btn" href="/complaints/new">File a complaint</a>
+        <a class="btn ghost" href="/dashboard">My dashboard</a>
+      <% } else { %>
+        <a class="btn" href="/reports">Open reports</a>
+        <a class="btn ghost" href="/search">Search tickets</a>
+      <% } %>
+      <a class="btn ghost" href="/faqs">FAQs</a>
+    </div>
+  </div>
+  <div class="stat-cards">
+    <div class="stat"><b><%= openTotal %></b><span>open tickets</span></div>
+    <div class="stat"><b><%= resolvedMonth %></b><span>resolved this month</span></div>
+    <div class="stat"><b><%= categories.length %></b><span>categories live</span></div>
+  </div>
+</section>
+
+<% if (announcements.length) { %>
+<section class="card">
+  <h2>Notices</h2>
+  <% for (const a of announcements) { %>
+    <div class="notice"><b><%= a.title %></b><p><%= a.body %></p><small><%= a.postedAt.toISOString().slice(0, 10) %></small></div>
+  <% } %>
+</section>
+<% } %>
+
+<section class="card">
+  <h2>Top complaint categories</h2>
+  <div class="cat-grid">
+    <% for (const c of categories) { %>
+      <a class="cat" href="/search?category=<%= c.code %>">
+        <span class="cat-icon"><%= c.icon %></span>
+        <b><%= c.name %></b>
+        <small><%= c.totalFiled %> filed</small>
+      </a>
+    <% } %>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Recently resolved</h2>
+  <% if (recent.length) { %>
+    <table>
+      <tr><th>Ticket</th><th>Issue</th><th>Status</th><th>Filed</th></tr>
+      <% for (const r of recent) { %>
+        <tr><td class="mono"><%= r.ticketNo %></td><td><%= r.title %></td><td><span class="badge ok"><%= r.status %></span></td><td><%= r.createdAt.toISOString().slice(0, 10) %></td></tr>
+      <% } %>
+    </table>
+  <% } else { %><p class="muted">Nothing resolved yet.</p><% } %>
+</section>
+
+<%- include('partials/foot') %>

@@ -1,0 +1,9 @@
+<%- include('partials/top', { title: code + ' — Error' }) %>
+
+<div class="error-card card">
+  <h1><%= code %></h1>
+  <p><%= msg %></p>
+  <a class="btn" href="/">Back to home</a>
+</div>
+
+<%- include('partials/foot') %>
