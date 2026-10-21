@@ -45,7 +45,7 @@ app.use((err, req, res, next) => {
 });
 
 // DB connect once per boot; ready promise lets serverless entrypoints await it
-const ready = mongoose.connect(MONGO_URI).then(async () => {
+const ready = mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 10000 }).then(async () => {
   // keep schema-declared indexes (text/TTL/compound) aligned with models on every boot
   await mongoose.syncIndexes();
   // log the URI without credentials
