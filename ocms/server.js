@@ -44,12 +44,19 @@ app.use((err, req, res, next) => {
   res.status(500).render('error', { user: req.user, code: 500, msg: 'Something went wrong' });
 });
 
-mongoose.connect(MONGO_URI)
-  .then(async () => {
-    // keep schema-declared indexes (text/TTL/compound) aligned with models on every boot
-    await mongoose.syncIndexes();
-    // log the URI without credentials
-    console.log(`MongoDB connected → ${MONGO_URI.replace(/\/\/.*@/, '//<credentials>@')}`);
-    app.listen(PORT, () => console.log(`OCMS running → http://localhost:${PORT}`));
-  })
-  .catch(err => { console.error('MongoDB connection failed:', err.message); process.exit(1); });
+// DB connect once per boot; ready promise lets serverless entrypoints await it
+const ready = mongoose.connect(MONGO_URI).then(async () => {
+  // keep schema-declared indexes (text/TTL/compound) aligned with models on every boot
+  await mongoose.syncIndexes();
+  // log the URI without credentials
+  console.log(`MongoDB connected → ${MONGO_URI.replace(/\/\/.*@/, '//<credentials>@')}`);
+});
+
+if (require.main === module) {
+  ready
+    .then(() => app.listen(PORT, () => console.log(`OCMS running → http://localhost:${PORT}`)))
+    .catch(err => { console.error('MongoDB connection failed:', err.message); process.exit(1); });
+}
+
+module.exports = app;
+module.exports.ready = ready;

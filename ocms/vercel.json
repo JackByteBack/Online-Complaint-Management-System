@@ -1,0 +1,9 @@
+{
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 15,
+      "includeFiles": ["views/**", "public/**"]
+    }
+  },
+  "rewrites": [{ "source": "/(.*)", "destination": "/api/index.js" }]
+}
